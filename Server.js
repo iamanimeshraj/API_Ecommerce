@@ -4,6 +4,8 @@ import bodyParser from 'express'
 import {config} from 'dotenv'
 import userRouter from './Routes/user.js'
 import productRouter from './Routes/product.js'
+import cartRouter from './Routes/cart.js'
+import addressRouter from './Routes/address.js'
 const app = express();
 app.use(bodyParser.json())
 config({path:".env"})
@@ -20,6 +22,10 @@ app.get('/', (req,res)=>{
 app.use('/api/user', userRouter)
 //product route
 app.use('/api/product', productRouter)
+//cart route
+app.use('/api/cart',cartRouter)
+//address route
+app.use('/api/address', addressRouter)
 
 const port=process.env.PORT;
 

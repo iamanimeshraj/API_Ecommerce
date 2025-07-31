@@ -5,7 +5,7 @@ dotenv.config()
 
 const rajorpay = new Razorpay({
     key_id: process.env.RZP_kEY_ID, 
-    key_secret: process.env.RZP_kEY_SECRET
+    key_secret: process.env.RZP_KEY_SECRET
 })
 
 export const checkout =async (req,res)=>{

@@ -15,22 +15,11 @@ const app = express();
 app.use(bodyParser.json())
 config({path:".env"})
 
-const allowedOrigins = [
-  'http://localhost:5173', // for local dev
-  'https://ecommerce-client-six-peach.vercel.app' // for Vercel deployment
-];
-
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true)
-    } else {
-      callback(new Error("Not allowed by CORS"))
-    }
-  },
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
-}));
+    origin:true,
+    methods:["GET","POST","PUT","DELETE"],
+    credentials:true
+}))
 
 
 mongoose.connect(process.env.MONGODB_URI,

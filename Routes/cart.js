@@ -1,5 +1,5 @@
 import express from 'express'
-import { addToCart, decreaseProductqty, removeAllproduct, removeProductFromCart, userCart } from '../Controllers/cart.js';
+import { addToCart, decreaseProductqty, increaseProductqty, removeAllproduct, removeProductFromCart, userCart } from '../Controllers/cart.js';
 import { isAuthenticated } from '../Middlewares/Auth.js';
 const router=express.Router();
 
@@ -13,12 +13,16 @@ router.get('/viewcart', isAuthenticated, userCart)
 
 //remove froduct from cart
 
-router.delete('/removeproduct/:productId',isAuthenticated, removeProductFromCart)
+router.delete('/removeproduct',isAuthenticated, removeProductFromCart)
 
 //clear cart
 router.delete('/clearcart', isAuthenticated,removeAllproduct)
 
 //decrease qty
 router.post('/-qty',isAuthenticated, decreaseProductqty)
+
+//increase qty
+router.post('/incqty',isAuthenticated, increaseProductqty)
+
 
 export default router;

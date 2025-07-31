@@ -19,18 +19,28 @@ export const register =async (req, res)=> {
     res.json ({message:"User created Successfully" ,success:true});
 };
 //login
-export const login= async (req,res)=>{
-    const {email,password}=req.body
-    if (email == "" || password == "")
-        return res.json({ message: "All fields are Required", Success: false });
-    let user= await User.findOne({email})
-    if(!user) return res.json ({message:"User does not exist" , Success:false});
-    const validpasword= await bcrypt.compare(password, user.password);
-    if(!validpasword) return res.json ({message:"Invalid Password", Success:false});
+export const login = async (req, res) => {
+  const { email, password } = req.body;
 
-    const token=jwt.sign({userId: user._id},process.env.KEY,{expiresIn:"1d"})
-    res.json ({message:`Welcome ${user.name}` ,token, Success:true})
-}
+  if (!email || !password) {
+    return res.status(400).json({ message: "All fields are required", Success: false });
+  }
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(404).json({ message: "User does not exist", Success: false });
+  }
+
+  const validPassword = await bcrypt.compare(password, user.password);
+  if (!validPassword) {
+    return res.status(401).json({ message: "Invalid password", Success: false });
+  }
+
+  const token = jwt.sign({ userId: user._id }, process.env.KEY, { expiresIn: "1d" });
+
+  return res.status(200).json({ message: `Welcome ${user.name}`, token, Success: true });
+};
+
 //get all users
 export const users=async (req, res)=>{
     try {

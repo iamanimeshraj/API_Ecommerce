@@ -2,7 +2,7 @@ import { Cart } from "../Models/Cart.js";
 
 //add to cart
 export const addToCart= async (req,res)=>{
-    const {productId, title,price,qty}=req.body;
+    const {productId, title,price,qty,image}=req.body;
     const userId =req.user;
 
     let cart = await Cart.findOne({userId});
@@ -14,9 +14,10 @@ export const addToCart= async (req,res)=>{
     )
     if(itemIndex>-1){
         cart.items[itemIndex].qty +=qty;
-        cart.items[itemIndex].price +=price*qty;
+        cart.items[itemIndex].totalprice = cart.items[itemIndex].price * cart.items[itemIndex].qty;
+
     }else{
-        cart.items.push({productId, title,price,qty})
+        cart.items.push({productId, title,price,totalprice:price*qty,qty,image})
     }
 
     await cart.save();
@@ -34,7 +35,7 @@ export const userCart = async (req,res)=>{
 }
 // remove product from cart
 export const removeProductFromCart= async (req, res)=>{
-    const productId= req.params.productId
+    const {productId}= req.body
     const userId= req.user
 
     let cart =await Cart.findOne({userId});
@@ -79,9 +80,8 @@ export const decreaseProductqty= async (req, res)=>{
     if(itemIndex>-1){
     const item = cart.items[itemIndex];
        if(item.qty>qty){
-        const pricePerUnit=item.price/item.qty
         item.qty -=qty
-        item.price-=pricePerUnit
+        item.totalprice = item.price * item.qty;
        }else{
         cart.items.splice(itemIndex,1)
        }
@@ -93,3 +93,35 @@ export const decreaseProductqty= async (req, res)=>{
     res.json({message:"Item qty decreased", cart, success:true})
 
 }
+// ✅ Increase Item from Cart
+export const increaseProductqty = async (req, res) => {
+  const { productId, qty } = req.body;
+  const userId = req.user;
+
+  try {
+    let cart = await Cart.findOne({ userId });
+
+    if (!cart) {
+      return res.json({ message: "Cart not found", success: false });
+    }
+
+    const itemIndex = cart.items.findIndex(
+      (item) => item.productId.toString() === productId
+    );
+
+    if (itemIndex > -1) {
+      const item = cart.items[itemIndex];
+      item.qty += qty;
+      item.totalprice = item.price * item.qty;
+    } else {
+      return res.json({ message: "Invalid Product ID", success: false });
+    }
+
+    await cart.save();
+    res.json({ message: "Item quantity increased", cart, success: true });
+
+  } catch (err) {
+    console.error("Error increasing quantity:", err);
+    res.status(500).json({ message: "Server Error", success: false });
+  }
+};

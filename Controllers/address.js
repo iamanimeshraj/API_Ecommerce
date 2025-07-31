@@ -7,7 +7,15 @@ export const addAddress= async (req, res)=>{
     res.json ({message:"Address Saved", useraddress, success:true})
 }
 
-export const getAddress= async (req,res)=>{
-    let address = await Address.find({userId:req.user}).sort({createdAt:-1})
-    res.json ({message:"Address", useraddress:address[0]})
-}
+export const getAddress = async (req, res) => {
+  try {
+    const addresses = await Address.find({ userId: req.user }).sort({ createdAt: -1 });
+    res.json({
+      success: true,
+      addresses
+    });
+  } catch (err) {
+    console.error("Error fetching addresses", err);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
